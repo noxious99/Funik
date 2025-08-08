@@ -1,0 +1,12 @@
+/node_modules
+/funik-client/node_modules/
+/funik-services/node_modules/
+
+
+/client/.env.production
+/client/.env.development
+server/.env
+*.env
+
+!client/env.example
+!server/env.example
