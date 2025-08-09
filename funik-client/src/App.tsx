@@ -1,44 +1,23 @@
-import { useEffect, useState } from 'react';
-import { socket } from './socket';
+import React from "react";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import Home from "./pages/Home";
+import Navbar from "./common-components/Navbar";
 
 function App() {
-  const [message, setMessage] = useState('');
-  const [chat, setChat] = useState<string[]>([]);
-
-  const sendMessage = () => {
-    if (message.trim() !== '') {
-      socket.emit('send_message', message);
-      setChat(prev => [...prev, `You: ${message}`]);
-      setMessage('');
-    }
-  };
-
-  useEffect(() => {
-    socket.on('receive_message', (msg: string) => {
-      setChat(prev => [...prev, `Other: ${msg}`]);
-    });
-
-    return () => {
-      socket.off('receive_message');
-    };
-  }, []);
-
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Chat App</h2>
-      <div style={{ marginBottom: '1rem', minHeight: 100 }}>
-        {chat.map((msg, index) => <div key={index}>{msg}</div>)}
+    <>
+      <div className="App box-border max-w-[2160px] flex justify-center mx-auto min-w-[360px]">
+        <BrowserRouter>
+          <Navbar />
+          <main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </main>
+        </BrowserRouter>
       </div>
-      <input
-        type="text"
-        placeholder="Type your message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-      />
-      <button onClick={sendMessage}>Send</button>
-    </div>
-  );
+    </>
+  )
 }
 
 export default App;

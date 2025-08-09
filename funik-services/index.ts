@@ -13,17 +13,18 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // React frontend port
+    origin: "*", // React frontend port
     methods: ["GET", "POST"]
   }
 });
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-
-  socket.on('send_message', (data) => {
-    console.log('Message received:', data);
-    socket.broadcast.emit('receive_message', data); // send to all except sender
+  socket.emit("your_player_id", socket.id);
+  socket.broadcast.emit("other_player_id", socket.id);
+  socket.on('player_move', (game_state, playerTurn, result) => {
+    console.log('player_move:', game_state, playerTurn);
+    socket.broadcast.emit('player_move', game_state, playerTurn, result); // send to all except sender
   });
 
   socket.on('disconnect', () => {
