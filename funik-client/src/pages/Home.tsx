@@ -1,17 +1,15 @@
 import React from 'react'
 import { useState } from 'react'
-import TicTacToe from '../features/tic_tac_toe/TicTacToe'
+import GameCard from '../common-components/GameCard'
 
 const Home: React.FC = () => {
-  const [gameTitle, setGameTitle] = useState("")
-  const handleUpdateGameTitle = () => {
-    
-  }
   return (
     <>
       <div className='flex justify-center'>
-        {gameTitle}
-        <TicTacToe />
+        <GameCard 
+          gameTitle="Tic-Tac-Toe"
+          link="tic_tac_toe"
+        />
       </div>
     </>
   )

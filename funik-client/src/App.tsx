@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
+import Game from "./pages/Game";
 import Navbar from "./common-components/Navbar";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
           <main>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/game/:title" element={<Game />} />
             </Routes>
           </main>
         </BrowserRouter>

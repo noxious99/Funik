@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { socket } from '../../socket'
+import { checkDraw, checkWinner } from './utils'
 
 const TicTacToe: React.FC = () => {
     const [boxValue, setBoxValue] = useState([
@@ -25,67 +26,20 @@ const TicTacToe: React.FC = () => {
             setWinner(result)
         });
         console.log(import.meta.env.PROD)
-        const checkWinning = () => {
-            for (let i = 0; i < 3; i++) {
-                if (
-                    boxValue[i][0] !== "" &&
-                    boxValue[i][0] === boxValue[i][1] &&
-                    boxValue[i][1] === boxValue[i][2]
-                ) {
-                    if (!winner) {
-                        setWinner(boxValue[i][0]);
-                    }
-                    return;
-                }
-            }
-            for (let i = 0; i < 3; i++) {
-                if (
-                    boxValue[0][i] !== "" &&
-                    boxValue[0][i] === boxValue[1][i] &&
-                    boxValue[1][i] === boxValue[2][i]
-                ) {
-                    if (!winner) {
-                        setWinner(boxValue[0][i]);
-                    }
-                    return;
-                }
-            }
-            if (
-                boxValue[0][0] !== "" &&
-                boxValue[0][0] === boxValue[1][1] &&
-                boxValue[1][1] === boxValue[2][2]
-            ) {
-                setWinner(boxValue[0][0]);
-                return;
-            }
-
-            if (
-                boxValue[0][2] !== "" &&
-                boxValue[0][2] === boxValue[1][1] &&
-                boxValue[1][1] === boxValue[2][0]
-            ) {
-                setWinner(boxValue[0][2]);
-                return;
-            }
+        let resultDraw = checkDraw(boxValue)
+        if (resultDraw && !winner) {
+            setWinner(resultDraw)
         }
-        const checkDraw = () => {
-            let flag = 0
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 3; j++) {
-                    if (!boxValue[i][j]) {
-                        flag = 1
-                    }
-                }
-            }
-            if (!flag) {
-                setWinner("Draw")
-            }
+        let selectedWinner: string = checkWinner(boxValue)
+        if (selectedWinner && !winner) {
+            setWinner(selectedWinner)
         }
-        checkDraw()
-        checkWinning()
     }, [boxValue, winner])
 
     const handleBoxValue = (row: number, column: number) => {
+        if (winner) {
+            return
+        }
         if (boxValue[row][column]) return;
         const newBoard = boxValue.map(r => [...r]);
         newBoard[row][column] = playerActive ? "X" : "O";
@@ -112,11 +66,13 @@ const TicTacToe: React.FC = () => {
         <>
             <div className='flex flex-col items-center'>
                 <div className='flex text-xl font-bold gap-10 mb-10'>
-                    <span>
-                        <span className=''>Player one: </span> <span>{playerOne}</span>
+                    <span className='flex items-center gap-2 text-sm font-semibold'>
+                        <span className=''>Player one: </span> 
+                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>gasdgadasdasdh</span>
                     </span>
-                    <span>
-                        <span className=''>Player two: </span> <span>{playerTwo}</span>
+                    <span className='flex items-center gap-2 text-sm font-semibold'>
+                        <span className=''>Player two: </span> 
+                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>gasdgadasdasdh</span>
                     </span>
                 </div>
                 <div className='flex flex-row items-center justify-center gap-10 mb-10'>
