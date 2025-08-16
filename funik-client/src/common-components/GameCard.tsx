@@ -1,13 +1,26 @@
-import React, { useState } from 'react'
+import React from 'react'
+import image from "../assets/sample-image.png"
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 import { Link } from 'react-router-dom'
 
-const GameCard: React.FC<{ gameTitle: string, link: string }> = ({ gameTitle, link }) => {
+const GameCard: React.FC<{ gameTitle: string, link: string, isDisabled: Boolean }> = ({ gameTitle, link, isDisabled }) => {
     return (
         <>
-            <Link to={`/game/${link}`}>
-                <div className='w-[200px] h-[200px] bg-gray-300 rounded-2xl ring-2 ring-gray-800 flex justify-center p-10'>
-                    <div className='font-semibold text-lg'>{gameTitle}</div>
-                </div>
+            <Link to={isDisabled ? "#" : `/game/${link}`}
+                onClick={(e) => isDisabled && e.preventDefault()}>
+                <Card className={isDisabled ? "opacity-50 pointer-events-none" : ""}>
+                    <CardHeader>
+                        <CardTitle className='flex justify-center'>{gameTitle}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <img src={image} alt='game_title' />
+                    </CardContent>
+                </Card>
             </Link>
         </>
     )
