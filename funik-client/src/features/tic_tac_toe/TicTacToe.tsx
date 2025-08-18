@@ -10,16 +10,14 @@ const TicTacToe: React.FC = () => {
     ])
     const [playerActive, setPlayerActive] = useState(true)
     const [winner, setWinner] = useState("")
-    const [playerOne, setPlayerOne] = useState("")
-    const [playerTwo, setPlayerTwo] = useState("")
 
     useEffect(() => {
-        socket.on("your_player_id", (playerId) => {
-            setPlayerOne(playerId);
-        });
-        socket.on("other_player_id", (playerId) => {
-            setPlayerTwo(playerId);
-        });
+        // socket.on("your_player_id", (playerId) => {
+        //     setPlayerOne(playerId);
+        // });
+        // socket.on("other_player_id", (playerId) => {
+        //     setPlayerTwo(playerId);
+        // });
         socket.on("player_move", (newBoard: string[][], playerTurn: boolean, result: string) => {
             setBoxValue(newBoard);
             setPlayerActive(playerTurn);
@@ -85,7 +83,7 @@ const TicTacToe: React.FC = () => {
                 <div className="flex flex-col">
                     {boxValue.map((row, rowIndex) => (
                         <div key={rowIndex} className="flex flex-row">
-                            {row.map((col, colIndex) => (
+                            {row.map((_, colIndex) => (
                                 <div
                                     key={colIndex}
                                     className={`flex w-[100px] h-[100px] ${winner ? 'bg-amber-900' : 'bg-amber-700'} justify-center items-center m-1 text-5xl rounded-3xl text-gray-100`}
