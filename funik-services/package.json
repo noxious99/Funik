@@ -5,7 +5,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "npx tsc",
+    "build": "npm install && npx tsc",
     "start-dev": "nodemon dist/index.js",
     "start": "node dist/index.js",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/index.js\""
