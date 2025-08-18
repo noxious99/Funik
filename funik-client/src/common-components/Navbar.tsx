@@ -5,7 +5,7 @@ import React from 'react'
 const Navbar: React.FC = () => {
   return (
     <>
-      <div className='flex items-center px-5 h-[80px] w-full bg-primary text-primary-foreground mb-10 justify-between'>
+      <div className='flex items-center px-5 h-[80px] w-full bg-primary text-primary-foreground mb-7 lg:mb-10 justify-between'>
         {/* 1st section */}
         <div className='flex-1'>
           <Button

@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { socket } from '../../socket'
 import { checkDraw, checkWinner } from './utils'
+import { Button } from '@/components/ui/button'
+import { IoReloadCircleOutline } from "react-icons/io5";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+
 
 const TicTacToe: React.FC = () => {
     const [boxValue, setBoxValue] = useState([
@@ -10,6 +20,7 @@ const TicTacToe: React.FC = () => {
     ])
     const [playerActive, setPlayerActive] = useState(true)
     const [winner, setWinner] = useState("")
+    const [openWinnerDialog, setOpenWinnerDialog] = useState(false)
 
     useEffect(() => {
         // socket.on("your_player_id", (playerId) => {
@@ -31,6 +42,9 @@ const TicTacToe: React.FC = () => {
         let selectedWinner: string = checkWinner(boxValue)
         if (selectedWinner && !winner) {
             setWinner(selectedWinner)
+        }
+        if (winner) {
+            setOpenWinnerDialog(true) // Open dialog when winner is decided
         }
     }, [boxValue, winner])
 
@@ -62,23 +76,24 @@ const TicTacToe: React.FC = () => {
 
     return (
         <>
-            <div className='flex flex-col items-center'>
-                <div className='flex text-xl font-bold gap-10 mb-10'>
-                    <span className='flex items-center gap-2 text-sm font-semibold'>
-                        <span className=''>Player one: </span> 
-                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>gasdgadasdasdh</span>
+            <div className='flex flex-col items-center gap-4'>
+                <div className='flex flex-col gap-2 text-base lg:text-lg items-center'>
+                    <span className='font-bold'>Tic - Tac - Toe</span>
+                    <div className='flex gap-1 text-[12px]'>
+                        <p>ROOM ID -</p> <span>352172</span>
+                    </div>
+                </div>
+                <div className='flex font-bold gap-4 text-[12px] lg:text-base'>
+                    <span className='flex items-center gap-2 font-semibold text-primary text-[shadow:0_0_8px_var(--primary)]'>
+                        <span className=''>Player-1</span>
+                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>gasdgad</span>
                     </span>
-                    <span className='flex items-center gap-2 text-sm font-semibold'>
-                        <span className=''>Player two: </span> 
-                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>gasdgadasdasdh</span>
+                    <span className='flex items-center gap-2 font-semibold text-secondary text-[shadow:0_0_8px_var(--secondary)]'>
+                        <span className=''>Player-2</span>
+                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>gasdgad</span>
                     </span>
                 </div>
                 <div className='flex flex-row items-center justify-center gap-10 mb-10'>
-                    <div className='font-bold text-xl'>Tic-Tac-Toe</div>
-                    <div className='flex items-center gap-2 pl-10'>
-                        <div className='px-5 py-2 text-xl font-bold bg-green-700 text-gray-100 rounded'>Winner</div>
-                        <div className={`${winner ? "text-5xl" : "text-xl"} font-bold text-blue-700`}>{winner ? winner : "pending.."}</div>
-                    </div>
                 </div>
                 <div className="flex flex-col">
                     {boxValue.map((row, rowIndex) => (
@@ -86,7 +101,7 @@ const TicTacToe: React.FC = () => {
                             {row.map((_, colIndex) => (
                                 <div
                                     key={colIndex}
-                                    className={`flex w-[100px] h-[100px] ${winner ? 'bg-amber-900' : 'bg-amber-700'} justify-center items-center m-1 text-5xl rounded-3xl text-gray-100`}
+                                    className={`flex w-[100px] h-[100px] bg-background border border-accent shadow-[0_0_8px_var(--accent)] justify-center items-center m-1 text-5xl rounded-3xl text-gray-100`}
                                     onClick={() => handleBoxValue(rowIndex, colIndex)}
                                 >
                                     {boxValue[rowIndex][colIndex]}
@@ -95,10 +110,28 @@ const TicTacToe: React.FC = () => {
                         </div>
                     ))}
                 </div>
-                <div className='flex items-center gap-2'>
-                    <div className='px-5 py-2 bg-red-700 text-gray-100 text-xl font-bold rounded hover:bg-red-900 my-5' onClick={() => resetGame()}>Reset Game</div>
+                <div className='flex items-center mt-4'>
+                    <Button onClick={() => resetGame()} className='bg-error'> <IoReloadCircleOutline className='font-extrabold' /> Reset Game</Button>
                 </div>
+                <Dialog open={openWinnerDialog} onOpenChange={setOpenWinnerDialog}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle className='flex justify-center mb-4'>🎉 Game Over!</DialogTitle>
+                            <DialogDescription>
+                                {winner === "draw"
+                                    ? "It's a draw! Try again?"
+                                    : (
 
+                                        <div className='flex items-center justify-center gap-2'>
+                                            <p className="text-3xl lg:text-4xl font-extrabold text-primary">{winner}</p>
+                                            <span>is the winner!! 🏆</span>
+                                        </div>
+
+                                    )}
+                            </DialogDescription>
+                        </DialogHeader>
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     )
