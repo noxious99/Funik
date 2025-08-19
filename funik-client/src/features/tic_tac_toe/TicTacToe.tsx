@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog"
 
 
-const TicTacToe: React.FC = () => {
+const TicTacToe: React.FC<{roomId: string}> = ({roomId}) => {
     const [boxValue, setBoxValue] = useState([
         ["", "", ""],
         ["", "", ""],
@@ -21,6 +21,7 @@ const TicTacToe: React.FC = () => {
     const [playerActive, setPlayerActive] = useState(true)
     const [winner, setWinner] = useState("")
     const [openWinnerDialog, setOpenWinnerDialog] = useState(false)
+    const [roomKey, setRoomKey] = useState("")
 
     useEffect(() => {
         // socket.on("your_player_id", (playerId) => {
@@ -29,6 +30,9 @@ const TicTacToe: React.FC = () => {
         // socket.on("other_player_id", (playerId) => {
         //     setPlayerTwo(playerId);
         // });
+        if (roomId) {
+            setRoomKey(roomId)
+        }
         socket.on("player_move", (newBoard: string[][], playerTurn: boolean, result: string) => {
             setBoxValue(newBoard);
             setPlayerActive(playerTurn);
@@ -78,9 +82,8 @@ const TicTacToe: React.FC = () => {
         <>
             <div className='flex flex-col items-center gap-4'>
                 <div className='flex flex-col gap-2 text-base lg:text-lg items-center'>
-                    <span className='font-bold'>Tic - Tac - Toe</span>
                     <div className='flex gap-1 text-[12px]'>
-                        <p>ROOM ID -</p> <span>352172</span>
+                        <p>ROOM ID -</p> <span>{roomKey}</span>
                     </div>
                 </div>
                 <div className='flex font-bold gap-4 text-[12px] lg:text-base'>

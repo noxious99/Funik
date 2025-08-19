@@ -12,7 +12,7 @@ function App() {
           <main>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/game/:title" element={<Game />} />
+              <Route path="/game/:gameKey" element={<Game />} />
             </Routes>
           </main>
         </BrowserRouter>
