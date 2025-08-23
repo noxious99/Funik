@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { IoMdLogIn } from "react-icons/io";
 import React from 'react'
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   return (
@@ -9,7 +10,7 @@ const Navbar: React.FC = () => {
         {/* 1st section */}
         <div className='flex-1'>
           <Button
-          className='bg-primary hover:bg-secondary'
+            className='bg-primary hover:bg-secondary'
             variant='outline'
           >
             <IoMdLogIn />
@@ -17,9 +18,11 @@ const Navbar: React.FC = () => {
           </Button>
         </div>
         {/* 2nd section */}
-        <div className='flex-1 flex justify-center'>
-          <div className='text-2xl font-bold text-gray-100'>Funik.ME</div>
-        </div>
+        <Link to="/">
+          <div className='flex-1 flex justify-center'>
+            <div className='text-2xl font-bold text-gray-100'>Funik.ME</div>
+          </div>
+        </Link>
         {/* 3rd section */}
         <div className='flex-1'></div>
       </div>

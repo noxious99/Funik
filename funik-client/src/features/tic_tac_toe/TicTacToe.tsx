@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { socket } from '../../socket'
-import { checkDraw, checkWinner } from './utils'
 import { Button } from '@/components/ui/button'
 import { IoReloadCircleOutline } from "react-icons/io5";
 import {
@@ -12,88 +11,92 @@ import {
 } from "@/components/ui/dialog"
 
 
-const TicTacToe: React.FC<{roomId: string}> = ({roomId}) => {
+const TicTacToe: React.FC<{ roomId: string }> = ({ roomId }) => {
     const [boxValue, setBoxValue] = useState([
         ["", "", ""],
         ["", "", ""],
         ["", "", ""]
     ])
-    const [playerActive, setPlayerActive] = useState(true)
+    // const [playerActive, setPlayerActive] = useState(true)
+    const [symbol, setSymbol] = useState("")
+    const [turn, setTurn] = useState(0)
+    const [myTurnValue, setMyTurnValue] = useState(0)
     const [winner, setWinner] = useState("")
     const [openWinnerDialog, setOpenWinnerDialog] = useState(false)
     const [roomKey, setRoomKey] = useState("")
+    const [warningMsg, setWarningMsg] = useState("")
 
-    useEffect(() => {
-        // socket.on("your_player_id", (playerId) => {
-        //     setPlayerOne(playerId);
-        // });
-        // socket.on("other_player_id", (playerId) => {
-        //     setPlayerTwo(playerId);
-        // });
+    useEffect(() => {;
         if (roomId) {
+            socket.emit("join_game_one", roomId)
             setRoomKey(roomId)
         }
-        socket.on("player_move", (newBoard: string[][], playerTurn: boolean, result: string) => {
-            setBoxValue(newBoard);
-            setPlayerActive(playerTurn);
-            setWinner(result)
+        socket.on("room_state", (room) => {
+        if (room.players[0] == socket.id) {
+            setSymbol("X")
+            setMyTurnValue(0)
+        } else {
+            setSymbol("O")
+            setMyTurnValue(1)
+        }   if (room.players.length < 2) {
+            setWarningMsg("waiting for Player-2 to join the game..")
+        } else {
+            setWarningMsg("")
+        }
+            setTurn(room.turn)
+            setBoxValue(room.board);
+            setWinner(room.winner);
+            // setPlayerActive(socket.id === room.players[room.turn]);
         });
-        console.log(import.meta.env.PROD)
-        let resultDraw = checkDraw(boxValue)
-        if (resultDraw && !winner) {
-            setWinner(resultDraw)
-        }
-        let selectedWinner: string = checkWinner(boxValue)
-        if (selectedWinner && !winner) {
-            setWinner(selectedWinner)
-        }
+
+        socket.on("player joined", (playerId: string) => {
+            console.log(`${playerId}: new player joined`)
+            setWarningMsg("")
+        })
+
+        return () => {
+            socket.off("room_state");
+        };
+    }, [roomId])
+
+     useEffect(() => {
         if (winner) {
-            setOpenWinnerDialog(true) // Open dialog when winner is decided
+            setOpenWinnerDialog(true);
         }
-    }, [boxValue, winner])
+    }, [winner]);
+
 
     const handleBoxValue = (row: number, column: number) => {
-        if (winner) {
+        if (winner || !roomId) {
             return
         }
         if (boxValue[row][column]) return;
-        const newBoard = boxValue.map(r => [...r]);
-        newBoard[row][column] = playerActive ? "X" : "O";
-
-        setBoxValue(newBoard);
-        setPlayerActive(prev => !prev);
-        socket.emit("player_move", newBoard, !playerActive, winner)
+        socket.emit("player_move", roomId, row, column)
     }
 
     const resetGame = () => {
-        const clearedBoard = [
-            ["", "", ""],
-            ["", "", ""],
-            ["", "", ""]
-        ];
-        const result = ""
-        setBoxValue(clearedBoard);
-        setWinner(result);
-        setPlayerActive(true);
-        socket.emit("player_move", clearedBoard, true, result);
+        if (roomId) {
+            socket.emit("reset_game", roomId);
+        }
     }
 
     return (
         <>
             <div className='flex flex-col items-center gap-4'>
                 <div className='flex flex-col gap-2 text-base lg:text-lg items-center'>
-                    <div className='flex gap-1 text-[12px]'>
-                        <p>ROOM ID -</p> <span>{roomKey}</span>
+                    <div className='flex flex-col gap-2 text-[12px] items-center'>
+                        <div className='flex gap-1'><p>ROOM ID -</p> <span>{roomKey}</span></div>
+                        {warningMsg ? warningMsg : <p className='font-bold text-primary'>{turn == myTurnValue? "Your Turn Now!": "waiting for oponent move.."}</p>}
                     </div>
                 </div>
                 <div className='flex font-bold gap-4 text-[12px] lg:text-base'>
-                    <span className='flex items-center gap-2 font-semibold text-primary text-[shadow:0_0_8px_var(--primary)]'>
-                        <span className=''>Player-1</span>
-                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>gasdgad</span>
+                    <span className='flex items-center gap-2 font-semibold text-secondary text-[shadow:0_0_8px_var(--primary)]'>
+                        <span className=''>Playing as</span>
+                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>{symbol}</span>
                     </span>
                     <span className='flex items-center gap-2 font-semibold text-secondary text-[shadow:0_0_8px_var(--secondary)]'>
                         <span className=''>Player-2</span>
-                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>gasdgad</span>
+                        <span className='bg-gray-300 flex justify-center items-center px-2 rounded border'>{symbol == "X"? "O" : "X"}</span>
                     </span>
                 </div>
                 <div className='flex flex-row items-center justify-center gap-10 mb-10'>

@@ -2,6 +2,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
 import Game from "./pages/Game";
 import Navbar from "./common-components/Navbar";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/game/:gameKey" element={<Game />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
         </BrowserRouter>
