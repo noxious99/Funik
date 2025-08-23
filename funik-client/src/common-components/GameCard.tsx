@@ -13,7 +13,7 @@ const GameCard: React.FC<{ gameTitle: string, link: string, isDisabled: Boolean,
     return (
         <>
             <Link
-                to={isDisabled ? "#" : `/game/${link}`}
+                to={isDisabled ? "#" : `/join_game?gamekey=${link}`}
                 onClick={(e) => isDisabled && e.preventDefault()}
                 className="w-full flex justify-center"
             >

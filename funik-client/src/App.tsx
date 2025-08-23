@@ -13,7 +13,7 @@ function App() {
           <main>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/game/:gameKey" element={<Game />} />
+              <Route path="/join_game" element={<Game />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

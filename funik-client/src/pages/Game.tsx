@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import TicTacToe from '../features/tic_tac_toe/TicTacToe';
-import { useParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { generateRandomNumber, mapGameName } from '@/utils';
 
 const Game: React.FC = () => {
-    const { gameKey } = useParams<{ gameKey: string }>();
+    const [searchParams] = useSearchParams();
+    const gameKey = searchParams.get("gamekey");
     const [room, setRoom] = useState("");
     const [gameTitle, setGameTitle] = useState("")
     const [roomInput, setRoomInput] = useState("");
@@ -82,7 +83,7 @@ const Game: React.FC = () => {
                 <div>
                     {gameTitle === "Tic - Tac - Toe" &&
                         <TicTacToe
-                         roomId = {room}
+                            roomId={room}
                         />
                     }
                 </div>
