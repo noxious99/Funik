@@ -1,5 +1,6 @@
 import React from 'react'
-import image from "../assets/sample-image.png"
+import tictactoe_thumb from "../assets/tictactoe_thumb.png"
+import battleship_thumb from "../assets/battleship_thumb.png"
 import {
     Card,
     CardContent,
@@ -10,6 +11,10 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 
 const GameCard: React.FC<{ gameTitle: string, link: string, isDisabled: Boolean, tagLine: string }> = ({ gameTitle, link, isDisabled, tagLine }) => {
+const gameThumbMap: Record<string, string> = {
+    tic_tac_toe: tictactoe_thumb,
+    battle_ship: battleship_thumb,
+}
     return (
         <>
             <Link
@@ -25,7 +30,7 @@ const GameCard: React.FC<{ gameTitle: string, link: string, isDisabled: Boolean,
                         <CardTitle className="text-center">{gameTitle}</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col justify-center items-center gap-5">
-                        <img src={image} alt="game_title" className="max-w-full h-auto" />
+                        <img src={gameThumbMap[link]} alt="game_title" className="w-[150px] h-auto" />
                         <p className='text-[10px] text-center'>{tagLine}</p>
                         <Button className='px-5' variant="outline">Play Game</Button>
                     </CardContent>
