@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Game from "./pages/Game";
 import Navbar from "./common-components/Navbar";
 import NotFound from "./pages/NotFound";
+import Battleship from "./features/battleship/battleship";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/join_game" element={<Game />} />
               <Route path="*" element={<NotFound />} />
+              <Route path="/test" element={<Battleship/>} />
             </Routes>
           </main>
         </BrowserRouter>
