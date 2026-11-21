@@ -1,58 +1,43 @@
+export type Cell = "" | "X" | "O";
+
 export type Board = [
-  [string, string, string],
-  [string, string, string],
-  [string, string, string]
+  [Cell, Cell, Cell],
+  [Cell, Cell, Cell],
+  [Cell, Cell, Cell]
 ];
 
-export const checkWinner = (board: Board) => {
-    for (let i = 0; i < 3; i++) {
-        if (
-            board[i]![0] !== "" &&
-            board[i]![0] === board[i]![1] &&
-            board[i]![1] === board[i]![2]
-        ) {
-            return board[i]![0];
-        }
-    }
-    for (let i = 0; i < 3; i++) {
-        if (
-            board[0][i] !== "" &&
-            board[0][i] === board[1][i] &&
-            board[1][i] === board[2][i]
-        ) {
-            return board[0][i]
+export type Position = [row: number, col: number];
 
-        }
-    }
-    if (
-        board[0][0] !== "" &&
-        board[0][0] === board[1][1] &&
-        board[1][1] === board[2][2]
-    ) {
-        return board[0][0]
-    }
+const WINNING_LINES: Position[][] = [
+  // rows
+  [[0, 0], [0, 1], [0, 2]],
+  [[1, 0], [1, 1], [1, 2]],
+  [[2, 0], [2, 1], [2, 2]],
+  // columns
+  [[0, 0], [1, 0], [2, 0]],
+  [[0, 1], [1, 1], [2, 1]],
+  [[0, 2], [1, 2], [2, 2]],
+  // diagonals
+  [[0, 0], [1, 1], [2, 2]],
+  [[0, 2], [1, 1], [2, 0]],
+];
 
-    if (
-        board[0][2] !== "" &&
-        board[0][2] === board[1][1] &&
-        board[1][1] === board[2][0]
-    ) {
-        return board[0][2]
-    }
-    return ""
-}
+export const createEmptyBoard = (): Board => [
+  ["", "", ""],
+  ["", "", ""],
+  ["", "", ""],
+];
 
-export const checkDraw = (board: Board) => {
-    let flag = 0
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            if (!board[i]![j]) {
-                flag = 1
-            }
-        }
+/** Returns the winning symbol and the line that won, or null if nobody has won. */
+export const findWinner = (board: Board): { symbol: Cell; line: Position[] } | null => {
+  for (const line of WINNING_LINES) {
+    const [a, b, c] = line.map(([r, col]) => board[r]![col]!);
+    if (a && a === b && b === c) {
+      return { symbol: a, line };
     }
-    if (!flag) {
-        return "Draw"
-    }
-    return ""
-}
+  }
+  return null;
+};
+
+export const isBoardFull = (board: Board): boolean =>
+  board.every((row) => row.every((cell) => cell !== ""));
