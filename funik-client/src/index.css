@@ -1,18 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500..900&family=Space+Grotesk:wght@400..700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-.App {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-main {
-  flex: 1;
-}
 
 @theme inline {
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
+  --color-player-x: var(--player-x);
+  --color-player-o: var(--player-o);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -80,6 +76,10 @@ main {
   --success: oklch(70% 0.20 140);        /* Lime Green */
   --error: oklch(65% 0.20 30);           /* Coral Red */
   --warning: oklch(85% 0.18 95);         /* Neon Yellow */
+
+  /* Tic-tac-toe marks */
+  --player-x: oklch(68% 0.25 350);       /* Hot Pink */
+  --player-o: oklch(82% 0.14 200);       /* Electric Cyan */
 
   /* Borders / Inputs */
   --border: oklch(40% 0.20 280);
@@ -150,8 +150,62 @@ main {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Orbitron', sans-serif;
+    @apply bg-background text-foreground font-sans antialiased;
+    min-height: 100dvh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, oklch(60% 0.25 340 / 0.18), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, oklch(50% 0.25 300 / 0.14), transparent 70%);
+    background-attachment: fixed;
+  }
+  h1, h2, h3 {
+    @apply font-display;
+  }
+}
+
+@utility text-gradient {
+  background-image: linear-gradient(90deg, var(--player-x), var(--secondary), var(--player-o));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility glow-x {
+  filter: drop-shadow(0 0 10px oklch(68% 0.25 350 / 0.7));
+}
+
+@utility glow-o {
+  filter: drop-shadow(0 0 10px oklch(82% 0.14 200 / 0.7));
+}
+
+/* Stroke-draw animation for X / O marks; paths use pathLength="1". */
+@keyframes draw-stroke {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+.mark-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: draw-stroke 280ms ease-out both;
+}
+.mark-stroke-delay {
+  animation-delay: 140ms;
+}
+
+@keyframes win-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+.animate-win-pulse {
+  animation: win-pulse 900ms ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark-stroke,
+  .animate-win-pulse {
+    animation: none;
   }
 }
