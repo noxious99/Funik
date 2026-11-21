@@ -1,93 +1,99 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import TicTacToe from '../features/tic_tac_toe/TicTacToe';
-import { useSearchParams } from 'react-router-dom';
-import { generateRandomNumber, mapGameName } from '@/utils';
+import Battleship from '../features/battleship/Battleship';
+import ModeSelector from '../features/tic_tac_toe/ModeSelector';
+import type { GameMode } from '../features/tic_tac_toe/types';
+import { Link, useSearchParams } from 'react-router-dom';
+import { generateRoomId, mapGameName } from '@/utils';
+import { GAME_KEYS } from '@/utils/const';
+import { Button } from '@/components/ui/button';
+import { IoArrowBack } from 'react-icons/io5';
+import NotFound from './NotFound';
 
 const Game: React.FC = () => {
-    const [searchParams] = useSearchParams();
-    const gameKey = searchParams.get("gamekey");
-    const [room, setRoom] = useState("");
-    const [gameTitle, setGameTitle] = useState("")
+    const [searchParams, setSearchParams] = useSearchParams();
+    const gameKey = searchParams.get("gamekey") ?? "";
+    // The room lives in the URL so a refresh keeps you in the game and invite links can join directly.
+    const room = searchParams.get("room")?.trim() ?? "";
+    const gameTitle = mapGameName(gameKey);
     const [roomInput, setRoomInput] = useState("");
-    const [joinState, setJoinState] = useState(false);
+    const [mode, setMode] = useState<GameMode>("classic");
 
-    useEffect(() => {
-        if (gameKey) {
-            let title = mapGameName(gameKey)
-            console.log(title);
-            setGameTitle(title);
-        }
-    }, [gameKey]);
+    if (!gameTitle) {
+        return <NotFound />;
+    }
 
-    const handleJoinState = (bool: boolean) => {
-        setJoinState(bool);
+    const enterRoom = (roomId: string) => {
+        setSearchParams({ gamekey: gameKey, room: roomId });
     };
+    const leaveRoom = () => {
+        setSearchParams({ gamekey: gameKey });
+    };
+
     const handleJoinRoom = (e: React.FormEvent) => {
-        e.preventDefault()
-        setRoom(roomInput)
-        console.log(room)
+        e.preventDefault();
+        const roomId = roomInput.trim();
+        if (roomId) {
+            enterRoom(roomId);
+        }
     };
-    const handleCreateRoom = () => {
-        const roomId: number = generateRandomNumber()
-        setRoom(String(roomId))
-    };
+
+    if (room && gameKey === GAME_KEYS.TIC_TAC_TOE) {
+        return <TicTacToe key={room} roomId={room} initialMode={mode} onLeave={leaveRoom} />;
+    }
+    if (room && gameKey === GAME_KEYS.BATTLESHIP) {
+        return <Battleship key={room} roomId={room} onLeave={leaveRoom} />;
+    }
 
     return (
-        <div className='flex flex-col justify-center items-center'>
-            <div className='font-bold text-lg mb-4'>{gameTitle}</div>
+        <div className='mx-auto flex w-full max-w-md flex-col gap-6'>
+            <Link to="/" className='flex items-center gap-1.5 self-start text-sm text-muted-foreground transition hover:text-foreground'>
+                <IoArrowBack /> All games
+            </Link>
 
-            {!room && !joinState && (
-                <div>
-                    <div
-                        className='bg-secondary text-gray-100 px-5 py-2 font-semibold text-lg flex justify-center items-center rounded my-5 hover:bg-primary duration-200 cursor-pointer'
-                        onClick={() => handleCreateRoom()}
-                    >
-                        Create Room
-                    </div>
-                    <div
-                        className='bg-secondary text-gray-100 px-5 py-2 font-semibold text-lg flex justify-center items-center rounded my-5 hover:bg-primary duration-200 cursor-pointer'
-                        onClick={() => handleJoinState(true)}
-                    >
-                        Join Room
-                    </div>
-                </div>
-            )}
+            <div className='text-center'>
+                <h1 className='text-gradient text-2xl font-black tracking-wide sm:text-3xl'>{gameTitle}</h1>
+                <p className='mt-2 text-sm text-muted-foreground'>Start a new room or jump into a friend's.</p>
+            </div>
 
-            {!room && joinState && (
-                <div className=''>
-                    <form onSubmit={handleJoinRoom} className='flex flex-col items-center justify-center gap-4 w-full'>
-                        <input
-                            className='border-2 border-foreground rounded px-3 py-2 w-[200px]'
-                            type='text'
-                            value={roomInput}
-                            onChange={(e) => setRoomInput(e.target.value)}
-                            placeholder='Enter room id'
-                        />
-                        <button
-                            type='submit'
-                            className='bg-primary text-white px-3 py-2 rounded'
-                        >
-                            Join Room
-                        </button>
-                    </form>
-                    <div
-                        className='bg-secondary text-gray-100 px-5 py-2 font-semibold text-lg flex justify-center items-center rounded my-5 hover:bg-primary duration-200 cursor-pointer'
-                        onClick={() => handleCreateRoom()}
-                    >
-                        Create Room
-                    </div>
-                </div>
-            )}
+            <section className='flex flex-col gap-4 rounded-2xl border bg-card/80 p-5 sm:p-6'>
+                <h2 className='text-sm font-bold tracking-wider uppercase'>Create a room</h2>
+                {gameKey === GAME_KEYS.TIC_TAC_TOE ? (
+                    <ModeSelector value={mode} onChange={setMode} />
+                ) : (
+                    <p className='text-xs text-muted-foreground'>
+                        10×10 grid, five ships each. Sink the whole enemy fleet to win.
+                    </p>
+                )}
+                <Button size='lg' onClick={() => enterRoom(generateRoomId())}>
+                    Create room
+                </Button>
+            </section>
 
-            {room && (
-                <div>
-                    {gameTitle === "Tic - Tac - Toe" &&
-                        <TicTacToe
-                            roomId={room}
-                        />
-                    }
-                </div>
-            )}
+            <div className='flex items-center gap-3 text-xs tracking-wider text-muted-foreground uppercase'>
+                <span className='h-px flex-1 bg-border' /> or <span className='h-px flex-1 bg-border' />
+            </div>
+
+            <section className='flex flex-col gap-4 rounded-2xl border bg-card/80 p-5 sm:p-6'>
+                <h2 className='text-sm font-bold tracking-wider uppercase'>Join a room</h2>
+                <form onSubmit={handleJoinRoom} className='flex gap-2'>
+                    <label htmlFor='room-id' className='sr-only'>Room ID</label>
+                    <input
+                        id='room-id'
+                        className='h-10 min-w-0 flex-1 rounded-md border border-input bg-background/60 px-3 font-display tracking-widest placeholder:font-sans placeholder:tracking-normal placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none'
+                        type='text'
+                        inputMode='numeric'
+                        autoComplete='off'
+                        maxLength={64}
+                        value={roomInput}
+                        onChange={(e) => setRoomInput(e.target.value)}
+                        placeholder='Enter room ID'
+                    />
+                    <Button type='submit' size='lg' variant='secondary' disabled={!roomInput.trim()}>
+                        Join
+                    </Button>
+                </form>
+            </section>
         </div>
     );
 };
