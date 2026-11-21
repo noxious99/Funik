@@ -1,7 +1,14 @@
 import { io } from 'socket.io-client';
+import { SERVER_URL } from './config';
+import { getToken } from './lib/api';
 
-// "undefined" means the URL will be computed from the `window.location` object
-const URL = import.meta.env.PROD ? 'https://funik.onrender.com/' : 'http://localhost:8000';
+// `auth` is a callback so every (re)connect sends the current login token.
+export const socket = io(SERVER_URL, {
+  auth: (cb) => cb({ token: getToken() }),
+});
 
-
-export const socket = io(URL);
+/** Reconnects so the server sees a login / logout. Game components re-join their room on "connect". */
+export const reconnectSocket = () => {
+  socket.disconnect();
+  socket.connect();
+};
