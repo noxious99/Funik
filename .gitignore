@@ -1,12 +1,10 @@
-/node_modules
-/funik-client/node_modules/
-/funik-services/node_modules/
+node_modules/
 
+# Build output (Vercel and Render build from source)
+dist/
 
-/client/.env.production
-/client/.env.development
-server/.env
+# Environment files
+.env
+.env.*
 *.env
-
-!client/env.example
-!server/env.example
+!.env.example
